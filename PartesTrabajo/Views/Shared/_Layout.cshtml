@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+
+<link href="~/Content/clockface.css" rel="stylesheet" />
+<script src="~/Content/clockface.js"></script>
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Partes diarios</title>
+        <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width" />
+        <link href="~/Content/css/bootstrap.css"  rel="stylesheet" type="text/css" media="all" />
+
+        @Styles.Render("~/Content/css")
+        @Scripts.Render("~/bundles/modernizr")
+    </head>
+    <body>
+        <div style="border-top: 2px solid #023d89"> 
+        <header>
+            
+        </header>
+        <div id="body">
+            @RenderSection("featured", required: false)
+            <section class="content-wrapper main-content clear-fix">
+                @RenderBody()
+            </section>
+        </div>
+            </div>
+
+
+        @Scripts.Render("~/bundles/jquery")
+        @RenderSection("scripts", required: false)
+    </body>
+</html>

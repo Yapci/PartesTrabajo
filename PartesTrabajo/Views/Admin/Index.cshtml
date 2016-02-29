@@ -1,0 +1,538 @@
+﻿<link href="~/Content/bootstrap.css" rel="stylesheet" />
+<link href="~/Content/bootstrap-theme.css" rel="stylesheet" />
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/css/bootstrap-select.min.css" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="~/Scripts/angular.js"></script>
+<link href="~/Content/toolkit-light.css" rel="stylesheet" />
+
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+
+<script>
+    angular.module("datosadmin", [])
+        //.constant("dataUrl", "http://www.demasesl.com:90/Partes/Admin/GetParteTrabajo")
+        //.constant("dataUrl1", "http://www.demasesl.com:90/Partes/Admin/GetTrabajos")
+        //.constant("dataUrl2", "http://www.demasesl.com:90/Partes/Admin/GetClientes")
+        //.constant("dataUrl3", "http://www.demasesl.com:90/Partes/Admin/GetProyectos")
+        //.constant("dataUrl4", "http://www.demasesl.com:90/Partes/Admin/GetEmpleados")
+        .constant("dataUrl", "http://localhost:1877/Admin/GetParteTrabajo")
+        .constant("dataUrl1", "http://localhost:1877/Admin/GetTrabajos")
+        .constant("dataUrl2", "http://localhost:1877/Admin/GetClientes")
+        .constant("dataUrl3", "http://localhost:1877/Admin/GetProyectos")
+        .constant("dataUrl4", "http://localhost:1877/Admin/GetEmpleados")
+        .constant("dataUrl5", "http://localhost:1877/Admin/GetSeries")
+        .controller("valores", function ($scope, $http, dataUrl, dataUrl1, dataUrl2, dataUrl3, dataUrl4, dataUrl5) {
+            $scope.data = {};
+            $http.get(dataUrl)
+                .success(function (data) {
+                    $scope.data.items = data;
+                })
+                .error(function (error) {
+                    $scope.data.error = error;
+                });
+            $scope.data1 = {};
+            $http.get(dataUrl1)
+                .success(function (data1) {
+                    $scope.data1.items = data1;
+                })
+                .error(function (error) {
+                    $scope.data1.error = error;
+                });
+            $scope.data2 = {};
+            $http.get(dataUrl2)
+                .success(function (data2) {
+                    $scope.data2.items = data2;
+                })
+                .error(function (error) {
+                    $scope.data2.error = error;
+                });
+            $scope.data3 = {};
+            $http.get(dataUrl3)
+                .success(function (data3) {
+                    $scope.data3.items = data3;
+                })
+                .error(function (error) {
+                    $scope.data3.error = error;
+                });
+
+            $scope.data4 = {};
+            $http.get(dataUrl4)
+                .success(function (data4) {
+                    $scope.data4.items = data4;
+                })
+                .error(function (error) {
+                    $scope.data4.error = error;
+                });
+            $scope.data5 = {};
+            $scope.data6 = {};
+            //$http.get(dataUrl5)
+            //    .success(function (data5) {
+            //        $scope.data5.items = data5;
+            //    })
+            //    .error(function (error) {
+            //        $scope.data5.error = error;
+            //    });
+
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1; //January is 0!
+
+            var yyyy = today.getFullYear();
+            if (dd < 10) {
+                dd = '0' + dd
+            }
+            if (mm < 10) {
+                mm = '0' + mm
+            }
+            var today = dd + '/' + mm + '/' + yyyy;
+            $scope.fechainicial = today;
+
+            var selectedTrabajo = null;
+            $scope.selectedTrabajo = function (newProyect) {
+                selectedTrabajo = newProyect;
+            }
+
+            $scope.TrabajoFilterFn = function (product) {
+                return selectedTrabajo == null | product.Trabajo.indexOf(selectedTrabajo) != -1;
+            }
+
+            var selectedProyecto = null;
+            $scope.selectedProyecto = function (newProyect) {
+                selectedProyecto = newProyect;
+            }
+
+            $scope.ProyectoFilterFn = function (product) {
+                return selectedProyecto == null | product.Proyecto.indexOf(selectedProyecto) != -1;
+            }
+
+            var selectedCliente = null;
+            $scope.selectedCliente = function (newProyect) {
+                selectedCliente = newProyect;
+            }
+
+            $scope.ClienteFilterFn = function (product) {
+                return selectedCliente == null | product.Cliente.indexOf(selectedCliente) != -1;
+            }
+
+            var selectedEmpleado = null;
+            $scope.selectedEmpleado = function (newProyect) {
+                selectedEmpleado = newProyect;
+            }
+
+            $scope.EmpleadoFilterFn = function (product) {
+                return selectedEmpleado == null | product.Empleado.indexOf(selectedEmpleado) != -1;
+            }
+
+            $scope.Back = function () {
+                window.location.href = "/Partes/Account/Login";
+            }
+
+            $scope.$watch(function () {
+                $scope.filteredItems = $scope.$eval("data.items | filter:TrabajoFilterFn| filter:ProyectoFilterFn | filter:ClienteFilterFn | filter:EmpleadoFilterFn | orderBy:sortType:sortReverse | filter:search | dateFilter:date1:date2");
+                var total = 0;
+                for (var i = 0; i < $scope.filteredItems.length; i++) {
+                    var aa = $scope.filteredItems[i];
+                    total += (aa.Horas);
+                }
+
+                document.getElementById("linea").innerHTML = 'Nº de trabajos ' + $scope.filteredItems.length;
+                //document.getElementById("tiempo").innerHTML = 'Tiempo total ' + total + ' horas'
+                var horas = Math.trunc(total / 60);
+                var minutos = total % 60;
+
+                //var date = new Date(null);
+                //date.setMinutes(total);
+                //var minutos = date.getMinutes().toString();
+                //if (minutos.length == 1)
+                //    minutos = '0' + minutos;
+                document.getElementById("tiempo").innerHTML = 'Tiempo total ' + horas + ':' + minutos + ' horas'
+            });
+
+            var seriesOptions = [];
+            $('#container').highcharts({
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'title'
+                },
+                xAxis: {
+                    categories: []
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Minutos'
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<b>{point.x}</b><br/>',
+                    pointFormat: '{series.name}: {point.y}<br/>Total: {point.stackTotal}'
+                },
+                plotOptions: {
+                    column: {
+                        stacking: 'normal',
+                        dataLabels: {
+                            enabled: true,
+                            color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+                            style: {
+                                textShadow: '0 0 3px black'
+                            }
+                        }
+                    }
+                },
+                series: []
+            });
+
+            $scope.getvalues = function () {
+                var datos = { fini: $scope.fechainicial, ffin: $scope.fechafinal };
+                $http({
+                     url: '/Admin/GetSeries',
+                     method: "POST",
+                     data: { 'fini': $scope.fechainicial, 'ffin': $scope.fechafinal }
+                }).success(function (data5) {
+                    $scope.data5.items = data5;
+                 })
+                .error(function (error) {
+                    alert(error);
+                });
+
+                var datos = { fini: $scope.fechainicial, ffin: $scope.fechafinal };
+                $http({
+                    url: '/Admin/GetEmpleados1',
+                    method: "POST",
+                    data: { 'fini': $scope.fechainicial, 'ffin': $scope.fechafinal }
+                }).success(function (data6) {
+                    $scope.data6.items = data6;
+                })
+                .error(function (error) {
+                    alert(error);
+                });
+            }
+
+            $scope.grafico = function () {
+                var chart = $('#container').highcharts()
+
+                while (chart.series.length > 0)
+                    chart.series[0].remove();
+
+                var arr = [];
+                for (var i = 0; i < $scope.data6.items.length; i++) {
+                    arr.push($scope.data6.items[i]);
+                }
+                chart.xAxis[0].setCategories(arr);
+                for (var i = 0; i < $scope.data5.items.length; i++) {
+                    chart.addSeries({ name: $scope.data5.items[i].Name, data: $scope.data5.items[i].Value });
+                }
+
+                chart.setTitle({ text: 'Cronograma de proyectos/empleados' });
+                if ($scope.fechafinal != null)
+                    chart.setTitle(null, { text: $scope.fechainicial + ' - ' + $scope.fechafinal });
+                else
+                    chart.setTitle(null, { text: $scope.fechainicial });
+            }
+        })
+
+
+        .filter('dateFilter', function () {
+            return function (items, fromDate, toDate) {
+
+                var filtered = [];
+
+                for (var i = 0; i < items.length; i++) {
+
+                    var item = items[i];
+                    if ((fromDate == undefined || fromDate == "") && (toDate === undefined || toDate == "")) {
+                        filtered.push(item);
+                        document.getElementById("date1").disabled = true;
+                    }
+                    else {
+                        if (toDate == undefined || toDate == "") {
+
+                            document.getElementById("date1").disabled = false;
+                            /* var dd = item.FechaInicial.toString().split(' ');
+                             if (dd[0] == fromDate) {
+                                 filtered.push(item);
+                             }*/
+
+                            // fechainicial
+                            var dd = new Date(item.FechaInicial);
+                            var d1 = dd.getDate();
+                            var m1 = dd.getMonth() + 1;
+                            var a1 = dd.getFullYear();
+                            var date1 = new Date(a1, m1, d1);
+
+                            // fromdate
+                            var fd = fromDate.toString().split('/');
+                            var d2 = parseInt(fd[0]);
+                            var m2 = parseInt(fd[1]);
+                            var a2 = parseInt(fd[2]);
+                            var date2 = new Date(a2, m2, d2);
+
+
+                            if (date1.getTime() == date2.getTime())
+                                filtered.push(item);
+
+                        } else {
+                            // fechainicial
+                            var dd = new Date(item.FechaInicial);
+                            var d1 = dd.getDate();
+                            var m1 = dd.getMonth() + 1;
+                            var a1 = dd.getFullYear();
+                            var date1 = new Date(a1, m1, d1);
+
+                            // fromdate
+                            var fd = fromDate.toString().split('/');
+                            var d2 = parseInt(fd[0]);
+                            var m2 = parseInt(fd[1]);
+                            var a2 = parseInt(fd[2]);
+                            var date2 = new Date(a2, m2, d2);
+
+                            // fechaFinal
+                            dd = dd = new Date(item.FechaFinal);
+                            d1 = dd.getDate();
+                            m1 = dd.getMonth() + 1;
+                            a1 = dd.getFullYear();
+                            date3 = new Date(a1, m1, d1);
+
+                            // todate
+                            fd = toDate.toString().split('/');
+                            d2 = parseInt(fd[0]);
+                            m2 = parseInt(fd[1]);
+                            a2 = parseInt(fd[2]);
+                            date4 = new Date(a2, m2, d2);
+
+                            if (date1 >= date2 && date3 <= date4) {
+                                filtered.push(item);
+                            }
+
+                            //if (item.FechaInicial >= fromDate && item.FechaInicial <= toDate) {                          
+                            //    filtered.push(item);
+                            //}
+                        }
+                    }
+                }
+
+                return filtered;
+            };
+        });
+</script>
+
+
+<div ng-app="datosadmin" ng-controller="valores">
+    @*    <div class="alert alert-danger" ng-show="data.error">
+        Error  ({{data.error.status}}). The producs data was not loaded.
+        <a href="/app.html" class="alert-link">Click here to try again</a>
+    </div>*@
+
+    <div class="bw" style="margin-top: 2%; width: 95%; padding-left: 0px" ng-app="datos" ng-controller="valores">
+        <div class="fu">
+            <div class="ge aom" style="width: 14%">
+                <nav class="aot" style="margin-right: 0px">
+                    <div id="nav-toggleable-sn" class="collapse and" ng-init="showlistado = true; showgrafico = false">
+                        <ul class="nav of nav-stacked">
+                            <li class="tq">GESTIONAR</li>
+                            <li>
+                                <a href="#" class="list-group-item active" ng-click="showlistado = true; showgrafico = false">
+                                    <span style="float: right; margin: 2px;" class="glyphicon glyphicon-list"></span>
+                                    Listado
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="list-group-item" ng-click="showlistado = false; showgrafico = true;">
+                                    <span style="float: right; margin: 2px;" class="glyphicon glyphicon-stats"></span>
+                                    Gráfico
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <div class="ud">
+                <div class="eg" style="height: 90vh">
+                    <div class="panel panel-default row" ng-hide="data.error" style="margin: 0px">
+                        <div class="alert alert-info" ng-show="showgrafico">
+                             <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                                        <div>
+                                            <input class="form-control" id="date2" placeholder="Fecha inicial ..." ng-model="fechainicial" ng-change="getvalues()" />
+                                        </div>
+                                        <div>
+                                            <input class="form-control" id="date3" placeholder="Fecha final ..." ng-model="fechafinal" ng-change="getvalues()"/>
+                                        </div>
+                                    </div>
+                                 <button style="float: right;" class="btn btn-info" ng-click="grafico()"><span class="glyphicon glyphicon-arrow-left"></button>
+                                </div>
+                            
+                        </div>
+                        <div class="alert alert-info" ng-show="showlistado">
+                            <button style="float: right;" class="btn btn-info" ng-click="Back()"><span class="glyphicon glyphicon-arrow-left"></button>
+                            <button type="button" class="btn btn-info" style="margin-right: 10px; float: right" name="print" id="print" onclick="printData()">
+                                <span class="glyphicon glyphicon-print"></span>
+                            </button>
+                            <form style="width: 25%; float: left">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                                        <div>
+                                            <input type="text" class="form-control" placeholder="Consulta de búsqueda 1 . . ." ng-model="search">
+                                        </div>
+                                        <div>
+                                            <input type="text" class="form-control" placeholder="Consulta de búsqueda 2 . . ." ng-model="search1">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                            <table style="width: 67%">
+                                <tr>
+                                    <td style="width: 20%">
+                                        <input class="form-control" id="date" placeholder="Fecha inicial ..." ng-model="date1" />
+                                    </td>
+                                    <td style="width: 20%">
+                                        <input class="form-control" id="date1" placeholder="Fecha final ..." ng-model="date2" disabled="disabled" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select name="language" class="form-control">
+                                            <option ng-click="selectedEmpleado()">Empleados ...</option>
+                                            <option ng-repeat="item in data4.items" ng-click="selectedEmpleado(item.Nombre)">{{item.Nombre}}</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="language" class="form-control">
+                                            <option ng-click="selectedProyecto()">Proyectos ...</option>
+                                            <option ng-repeat="item in data3.items" ng-click="selectedProyecto(item.Nombre)">{{item.Nombre}}</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="language" class="form-control">
+                                            <option ng-click="selectedTrabajo()">Trabajos ...</option>
+                                            <option ng-repeat="item in data1.items" ng-click="selectedTrabajo(item.Nombre)">{{item.Nombre}}</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="language" class="form-control">
+                                            <option ng-click="selectedCliente()">Clientes ...</option>
+                                            <option ng-repeat="item in data2.items" ng-click="selectedCliente(item.Nombre)">{{item.Nombre}}</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-xs-15" style="margin-left: 1.5%; width: 97%">
+                            <table class="table table-bordered table-striped" id="tabla" ng-show="showlistado">
+                                <thead>
+                                    <tr>
+                                        <td style="font-weight: bold">
+                                            <a href="#" ng-click="sortType = 'Empleado'; sortReverse = !sortReverse ">Empleado
+                        <span ng-show="sortType == 'Empleado' && sortReverse" class="fa fa-caret-down"></span>
+                                                <span ng-show="sortType == 'Empleado' && !sortReverse" class="fa fa-caret-up"></span>
+                                            </a>
+                                        </td>
+                                        <td style="font-weight: bold">
+                                            <a href="#" ng-click="sortType = 'FechaInicial'; sortReverse = !sortReverse">Fecha Inicial
+                            <span ng-show="sortType == 'FechaInicial' && sortReverse" class="fa fa-caret-down"></span>
+                                                <span ng-show="sortType == 'FechaInicial' && !sortReverse" class="fa fa-caret-up"></span>
+                                            </a>
+                                        </td>
+                                        <td style="font-weight: bold">
+                                            <a href="#" ng-click="sortType = 'FechaFinal'; sortReverse = !sortReverse">Fecha Final
+                            <span ng-show="sortType == 'FechaFinal' && sortReverse" class="fa fa-caret-down"></span>
+                                                <span ng-show="sortType == 'FechaFinal' && !sortReverse" class="fa fa-caret-up"></span>
+                                            </a>
+                                        </td>
+                                        <td style="font-weight: bold">
+                                            <a href="#" ng-click="sortType = 'Horas'; sortReverse = !sortReverse">Minutos
+                            <span ng-show="sortType == 'Horas' && sortReverse" class="fa fa-caret-down"></span>
+                                                <span ng-show="sortType == 'Horas' && !sortReverse" class="fa fa-caret-up"></span>
+                                            </a>
+                                        </td>
+                                        <td style="font-weight: bold">
+                                            <a href="#" ng-click="sortType = 'Cliente'; sortReverse = !sortReverse">Cliente
+                            <span ng-show="sortType == 'Cliente' && sortReverse" class="fa fa-caret-down"></span>
+                                                <span ng-show="sortType == 'Cliente' && !sortReverse" class="fa fa-caret-up"></span>
+                                            </a>
+                                        </td>
+                                        <td style="font-weight: bold">
+                                            <a href="#" ng-click="sortType = 'Proyecto'; sortReverse = !sortReverse">Proyecto
+                            <span ng-show="sortType == 'Proyecto' && sortReverse" class="fa fa-caret-down"></span>
+                                                <span ng-show="sortType == 'Proyecto' && !sortReverse" class="fa fa-caret-up"></span>
+                                            </a>
+                                        </td>
+                                        <td style="font-weight: bold">
+                                            <a href="#" ng-click="sortType = 'Trabajo'; sortReverse = !sortReverse">Trabajo
+                            <span ng-show="sortType == 'Trabajo' && sortReverse" class="fa fa-caret-down"></span>
+                                                <span ng-show="sortType == 'Trabajo' && !sortReverse" class="fa fa-caret-up"></span>
+                                            </a>
+                                        </td>
+                                        <td style="font-weight: bold">
+                                            <a href="#" ng-click="sortType = 'Nota'; sortReverse = !sortReverse">Nota
+                            <span ng-show="sortType == 'Nota' && sortReverse" class="fa fa-caret-down"></span>
+                                                <span ng-show="sortType == 'Nota' && !sortReverse" class="fa fa-caret-up"></span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr ng-repeat="item in filtered = (data.items | filter:TrabajoFilterFn| filter:ProyectoFilterFn | filter:ClienteFilterFn | filter:EmpleadoFilterFn | orderBy:sortType:sortReverse | filter:search | filter:search1 | dateFilter:date1:date2)">
+                                        <td style="font-weight: bold; color: #2278bf">{{item.Empleado}}</td>
+                                        <td>{{item.FechaInicial | date:'dd/MM/yyyy HH:mm'}}</td>
+                                        <td>{{item.FechaFinal | date:'dd/MM/yyyy HH:mm'}}</td>
+                                        <td>{{item.Horas}}</td>
+                                        <td>{{item.Cliente}}</td>
+                                        <td>{{item.Proyecto}}</td>
+                                        <td>{{item.Trabajo}}</td>
+                                        <td>{{item.Nota}}</td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+                            <div id="container" ng-show="showgrafico"></div>
+                        </div>
+
+                    </div>
+                </div>
+                <h5 style="float: left; margin-left: 14%; font-weight: bold" id="linea" ng-show="showlistado"></h5>
+                <h5 style="float: left; margin-left: 5%; font-weight: bold" id="tiempo" ng-show="showlistado"></h5>
+                <h5 style="float: left; margin-left: 5%; font-weight: bold" id="media" ng-show="showlistado"></h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#date").datepicker({ dateFormat: 'dd/mm/yy' });
+        $("#date1").datepicker({ dateFormat: 'dd/mm/yy' });
+        $("#date2").datepicker({ dateFormat: 'dd/mm/yy' });
+        $("#date3").datepicker({ dateFormat: 'dd/mm/yy' });
+
+        $('.nav li a').click(function (e) {
+            $('.nav li a').removeClass('active');
+            $(this).addClass('active');
+            e.preventDefault();
+        });
+    });
+    $(document).ready(function () {
+
+    });
+
+
+    function printData() {
+        var divToPrint = document.getElementById("tabla");
+        newWin = window.open("");
+        newWin.document.write(divToPrint.outerHTML);
+        newWin.print();
+        newWin.close();
+    }
+
+</script>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="6e48aea5fcf343089d12d11a3c1bfbf7" Name="Diagram1">
+        <EntityTypeShape EntityType="PartesModel.Cliente" Width="1.5" PointX="9.375" PointY="11.625" />
+        <EntityTypeShape EntityType="PartesModel.Empleado" Width="1.5" PointX="1.1970366356880575" PointY="19.21897179783274" />
+        <EntityTypeShape EntityType="PartesModel.Parte" Width="1.5" PointX="2.9824999845505227" PointY="2.5728156429588869" />
+        <EntityTypeShape EntityType="PartesModel.Parte_Trabajo" Width="1.5" PointX="8.5404988976849712" PointY="10.715795924289058" />
+        <EntityTypeShape EntityType="PartesModel.Proyecto" Width="1.5" PointX="11.695382784910214" PointY="25.49784309859287" />
+        <EntityTypeShape EntityType="PartesModel.Trabajo" Width="1.5" PointX="7.77568289999649" PointY="6.3684247463794543" />
+        <AssociationConnector Association="PartesModel.FK_Parte_Trabajo_Cliente" />
+        <AssociationConnector Association="PartesModel.FK_Parte_Empleado" />
+        <AssociationConnector Association="PartesModel.FK_Parte_Trabajo_Parte" />
+        <AssociationConnector Association="PartesModel.FK_Parte_Trabajo_Proyecto" />
+        <AssociationConnector Association="PartesModel.FK_Parte_Trabajo_Trabajo" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

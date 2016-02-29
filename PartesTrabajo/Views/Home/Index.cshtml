@@ -1,0 +1,389 @@
+﻿
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link href="~/Content/bootstrap.css" rel="stylesheet" />
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" media="screen" href="http://tarruda.github.com/bootstrap-datetimepicker/assets/css/bootstrap-datetimepicker.min.css">*@
+
+<link href="~/Content/bootstrap.css" rel="stylesheet" />
+<link href="~/Content/bootstrap-theme.css" rel="stylesheet" />
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.2/css/bootstrap-select.min.css" />
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="~/Scripts/angular.js"></script>
+<script src="~/Scripts/angular.js"></script>
+<script>
+    angular.module("datos", [])
+        .constant("dataUrl", "http://www.demasesl.com:90/Partes/Home/GetTrabajos")
+        .constant("dataUrl1", "http://www.demasesl.com:90/Partes/Home/GetClientes")
+        .constant("dataUrl2", "http://www.demasesl.com:90/Partes/Home/GetProyectos")
+        .constant("dataUrl3", "http://www.demasesl.com:90/Partes/Home/GetParte_Trabajo")
+        .controller("valores", function ($scope, $http, dataUrl, dataUrl1, dataUrl2, dataUrl3) {
+            $scope.data = {};
+            $http.get(dataUrl)
+                .success(function (data) {
+                    $scope.data.items = data;
+                })
+                .error(function (error) {
+                    $scope.data.error = error;
+                });
+
+            $scope.data1 = {};
+            $http.get(dataUrl1)
+                .success(function (data1) {
+                    $scope.data1.items = data1;
+                })
+                .error(function (error) {
+                    $scope.data1.error = error;
+                });
+
+            $scope.data2 = {};
+            $http.get(dataUrl2)
+                .success(function (data2) {
+                    $scope.data2.items = data2;
+                })
+                .error(function (error) {
+                    $scope.data2.error = error;
+                });
+
+            $scope.data3 = {};
+            
+            $http.get(dataUrl3 + "?empleado=" + document.getElementById("empleado").innerHTML + "&fecha=" + document.getElementById("FechaParte").innerHTML.replace('/', '-').replace('/', '-'))
+                .success(function (data3) {
+                    $scope.data3.items = data3;
+                })
+                .error(function (error) {
+                    $scope.data3.error = error;
+                });
+
+            $scope.AddData = function () {
+                try {
+                    var date = document.getElementById("FechaParte").innerHTML;
+                    var f1 = document.getElementById("time1").value;
+                    var f2 = document.getElementById("time2").value;
+
+                    var fr1 = date.split('/');
+                    var fr2 = f1.split(':');
+                    var fr3 = f2.split(':');
+
+                    var dr1 = new Date(parseInt(fr1[2].toString()), parseInt(fr1[1].toString()) - 1, parseInt(fr1[0].toString()), parseInt(fr2[0].toString()), parseInt(fr2[1].toString()), 0, 0);
+                    var dr2 = new Date(parseInt(fr1[2].toString()), parseInt(fr1[1].toString()) - 1, parseInt(fr1[0].toString()), parseInt(fr3[0].toString()), parseInt(fr3[1].toString()), 0, 0);
+                    var diff = (((dr2 - dr1) / 3600000) * 60);
+
+                    var pt = {
+                        Trabajo: $scope.selected1,
+                        Cliente: $scope.selected2,
+                        Proyecto: $scope.selected3,
+                        Nota: $scope.note,
+                        HoraInicial: $scope.hora1,
+                        HoraFinal: $scope.hora2,
+                        Horas: Math.round(diff *10)/10,
+                    };
+                    $scope.data3.items.push(pt);
+                    $scope.selected1 = '',
+                    $scope.selected2 = '',
+                    $scope.selected3 = '',
+                    $scope.note = '',
+                    $scope.hora1 = '',
+                    $scope.hora2 = ''
+
+                    var total = 0;
+                    for (var i = 0; i < $scope.data3.items.length; i++) {
+                        var aa = $scope.data3.items[i];
+                        total += (aa.Horas);
+                    }
+                    document.getElementById("tiempo").innerHTML = 'Tiempo total ' + total + ' horas'
+                }
+                catch (err) {
+                    alert('No se ha podido añadir el nuevo registro. \nCompruebe que todos los campos estan completos y que los datos son correctos.');
+                }
+            }
+
+            $scope.removeItem = function (index) {
+                $scope.data3.items.splice(index, 1);
+                var total = 0;
+                for (var i = 0; i < $scope.data3.items.length; i++) {
+                    var aa = $scope.data3.items[i];
+                    total += (aa.Horas);
+                }
+                document.getElementById("tiempo").innerHTML = 'Tiempo total ' + total + ' horas'
+            };
+
+            $scope.getTotal = function () {
+                var total = 0;
+                for (var i = 0; i < $scope.data3.items.length; i++) {
+                    var aa = $scope.data3.items[i];
+                    total += (aa.Horas);
+                }
+                //document.getElementById("tiempo").innerHTML = 'Tiempo total ' + total + ' horas'
+                var date = new Date(null);
+                date.setMinutes(total);
+                //alert(date.getTime());
+                var minutos = date.getMinutes().toString();
+                if (minutos.length == 1)
+                    minutos = '0' + minutos;
+                document.getElementById("tiempo").innerHTML = 'Tiempo total ' + date.getHours() + ':' + minutos + ' horas'
+            }
+
+            $scope.Confirmar = function () {
+                var date = document.getElementById("FechaParte").innerHTML;
+                var envio = {
+                    fecha: date,
+                    //nota : document.getElementById("note1").value, 
+                    tiempo : document.getElementById("tiempo").innerHTML,
+                    empleado: document.getElementById("empleado").innerHTML,
+                    datos : $scope.data3.items
+                };
+
+                $http.post("/Partes/Home/Confirmar?", envio).success(function (data3) {
+                    alert('Datos confirmados con éxito');
+                })
+                .error(function (error) {
+                    alert(error);
+                });
+            }
+
+            $scope.Reload = function () {
+                window.location.href = "/Partes/Home/Index?name=" + document.getElementById("empleado").innerHTML + "&fecha=" + document.getElementById("FechaParte").innerHTML;
+            }
+
+            $scope.Back = function () {
+                window.location.href = "/Partes/Account/Login";
+            }
+
+        })
+</script>
+
+
+<div style="margin-left:5%; margin-right:5%; margin-top:2%" ng-app="datos"  ng-controller="valores">
+        <h4  style="float:left; color:#005dcc" id="empleado">@ViewBag.user</h4>
+        <h4  style="float:left;color:#005dcc; margin-left:10px" id="FechaParte">@ViewBag.fecha</h4>
+
+        <button style="float:right;margin-left:10px" class="btn btn-info" ng-click="Back()">Volver <span class="glyphicon glyphicon-arrow-left"></button>
+        <button style="float:right;margin-left:10px" class="btn btn-info" ng-click="Reload()">Recargar <span class="glyphicon glyphicon-repeat"></button>
+        <button style="float:right;margin-left:10px" class="btn btn-success" ng-click="Confirmar()">Guardar cambios <span class="glyphicon glyphicon-ok"></button>
+        @*<div id="datetimepicker4" class="input-append" >
+            <input data-format="dd/MM/yyyy" type="text" id="date" ng-model="date"/>
+            <span class="add-on">
+              <i data-time-icon="icon-time" data-date-icon="icon-calendar">
+              </i>
+            </span>
+          </div>*@
+
+@*        <textarea style="margin-top:10px;width:98%" placeholder="Nota ..." class="form-control" aria-describedby="sizing-addon1" id="note1"></textarea>*@
+            <table class="table  table-striped" style="margin-top:10px"> 
+                <tr>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th>Cliente</th>
+                    <th>Proyecto</th>
+                    <th>Trabajo</th>
+                    <th>Nota</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td style="width:10%">
+                        <input data-format="hh:mm:ss" type="text" placeholder="hh:mm" id="time1" ng-model="hora1"  style="width:95%"/>
+@*                      <div id="datetimepicker1" class="input-append">
+                        <input data-format="hh:mm:ss" type="text" id="time1" ng-model="hora1"/>
+                        <span class="add-on">
+                            <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                        </span>
+                      </div>*@
+                    </td>
+                    <td style="width:10%">
+                        <input data-format="hh:mm:ss" type="text" id="time2" placeholder="hh:mm" ng-model="hora2"  style="width:95%"/>
+@*                        <div id="datetimepicker2" class="input-append">
+                            <input data-format="hh:mm:ss" type="text" id="time2" ng-model="hora2"/>
+                            <span class="add-on">
+                                <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                            </span>
+                      </div>*@
+                    </td>
+                    <td>
+                        <select class="form-control" id="sel2" ng-model="selected2">
+                            <option></option>
+                            <option ng-repeat="item in data1.items">{{item.Nombre}}</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" id="sel3" ng-model="selected3">
+                            <option></option>
+                            <option ng-repeat="item in data2.items">{{item.Nombre}}</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" id="sel1" ng-model="selected1">
+                            <option></option>
+                            <option ng-repeat="item in data.items">{{item.Nombre}}</option>
+                        </select>
+                    </td>
+                    <td style="width:25%">
+                        <textarea placeholder="Nota ..." class="form-control" aria-describedby="sizing-addon1" style="width:95%" id="note2" ng-model="note"></textarea>
+                    </td>
+                    <td >
+                        <button  type="button" id="myButton" data-loading-text="Loading..." class="btn btn-primary" ng-click="AddData()" onclick="Sumar()"><span class="glyphicon glyphicon-plus"></button>
+                    </td>
+                </tr>
+            </table>
+    <button type="button" class="btn btn-primary btn-sm" style="margin-right:10px; float:right" name="print" id="print" onclick="printData()">
+                <span class="glyphicon glyphicon-print">
+            </button>
+        <div class="col-xs-15" style="padding: 0px 0px 0px 0px;" >
+            <table class="table  table-striped"  id="tabla">   
+                <thead>
+                  <tr>
+                    <td style="font-weight:bold">
+                      <a href="#" ng-click="sortType = 'FechaInicial'; sortReverse = !sortReverse ">
+                        Hora Inicio
+                        <span ng-show="sortType == 'FechaInicial' && sortReverse" class="fa fa-caret-down"></span>
+                        <span ng-show="sortType == 'FechaInicial' && !sortReverse" class="fa fa-caret-up"></span>
+                      </a>
+                    </td>
+                    <td style="font-weight:bold">
+                        <a href="#" ng-click="sortType = 'FechaFinal'; sortReverse = !sortReverse">
+                            Hora Fin
+                            <span ng-show="sortType == 'FechaFinal' && sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'FechaFinal' && !sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                    </td>
+                       <td style="font-weight:bold">
+                        <a href="#" ng-click="sortType = 'Horas'; sortReverse = !sortReverse">
+                            Minutos
+                            <span ng-show="sortType == 'Horas' && sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'Horas' && !sortReverse" class="fa fa-caret-up"></span>
+                        </a>
+                    </td>
+                    <td style="font-weight:bold">
+                        <a href="#" ng-click="sortType = 'Cliente'; sortReverse = !sortReverse">
+                            Cliente
+                            <span ng-show="sortType == 'Cliente' && sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'Cliente' && !sortReverse" class="fa fa-caret-up"></span>
+                        </a>
+                    </td>
+                    <td style="font-weight:bold">
+                        <a href="#" ng-click="sortType = 'Proyecto'; sortReverse = !sortReverse">
+                            Proyecto
+                            <span ng-show="sortType == 'Proyecto' && sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'Proyecto' && !sortReverse" class="fa fa-caret-up"></span>
+                        </a>
+                    </td>
+                    <td style="font-weight:bold">
+                        <a href="#" ng-click="sortType = 'Trabajo'; sortReverse = !sortReverse">
+                            Trabajo
+                            <span ng-show="sortType == 'Trabajo' && sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'Trabajo' && !sortReverse" class="fa fa-caret-up"></span>
+                        </a>
+                    </td>
+                    <td style="font-weight:bold">
+                            <a href="#" ng-click="sortType = 'Nota'; sortReverse = !sortReverse">
+                            Nota
+                            <span ng-show="sortType == 'Nota' && sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'Nota' && !sortReverse" class="fa fa-caret-up"></span>
+                        </a>
+                    </td>                   
+                      <td>
+                          <a href="#" ng-click="sortType = 'Ubicacion'; sortReverse = !sortReverse">
+                            Delete
+                        </a>
+                      </td>
+                  </tr>
+                </thead>
+    
+                <tbody>
+                  <tr ng-repeat="item in data3.items | orderBy:sortType:sortReverse | filter:search | filter:search1">
+                    <td>{{item.HoraInicial}}</td>
+                    <td>{{item.HoraFinal}}</td>
+                    <td>{{item.Horas}}</td>
+                    <td>{{item.Cliente}}</td>
+                    <td>{{item.Proyecto}}</td>
+                    <td>{{item.Trabajo}}</td>
+                    <td>{{item.Nota}}</td>                 
+                    <td><button class="btn btn-danger" ng-click="removeItem($index)"><span class="glyphicon glyphicon-remove"></button></td>
+                  </tr>
+                </tbody>
+    
+              </table>
+        </div>
+        <h4 style="float:right" id ="tiempo">Tiempo total {{getTotal()}} horas</h4>
+    </div>
+
+
+<!-- Load jQuery and bootstrap datepicker scripts -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="~/Scripts/bootstrap-datepicker.js"></script>
+    <script type="text/javascript"
+     src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js">
+    </script>
+    <script type="text/javascript"
+     src="http://tarruda.github.com/bootstrap-datetimepicker/assets/js/bootstrap-datetimepicker.min.js">
+    </script>
+    <script type="text/javascript"
+     src="http://tarruda.github.com/bootstrap-datetimepicker/assets/js/bootstrap-datetimepicker.pt-BR.js">
+    </script>
+<script type="text/javascript">
+// When the document is ready
+
+$(document).ready(function () {
+
+    $('#datetimepicker4').datetimepicker({
+        pickTime: false,
+    }).on("changeDate", function (ev) {
+        alert("date changed");
+    });
+
+    $('#datetimepicker1').datetimepicker({
+        pickDate: false
+    });
+
+    $('#datetimepicker2').datetimepicker({
+        pickDate: false
+    });
+});
+
+function Sumar() {
+    var date = document.getElementById("date").value;
+    var f1 = document.getElementById("time1").value;
+    var f2 = document.getElementById("time2").value;
+
+    var fr1 = date.split('/');
+    var fr2 = f1.split(':');
+    var fr3 = f2.split(':');
+
+    var dr1 = new Date(parseInt(fr1[2].toString()), parseInt(fr1[1].toString()) - 1, parseInt(fr1[0].toString()), parseInt(fr2[0].toString()), parseInt(fr2[1].toString()), 0, 0);
+    var dr2 = new Date(parseInt(fr1[2].toString()), parseInt(fr1[1].toString()) - 1, parseInt(fr1[0].toString()), parseInt(fr3[0].toString()), parseInt(fr3[1].toString()), 0, 0);
+    var diff = (dr2 - dr1) / 3600000;
+
+    var label = document.getElementById("tiempo").innerHTML;
+    var diff2 = label.split(' ');
+    var total = Math.round((parseFloat(diff) + parseFloat(diff2[2]))*10)/10;
+
+    document.getElementById("tiempo").innerHTML = '';
+    document.getElementById("tiempo").innerHTML = 'Tiempo total ' + total + ' horas';
+}
+
+function printData() {
+    var divToPrint = document.getElementById("tabla");
+    var rows = divToPrint.getElementsByTagName('tr');
+    var col_no = 7;
+    var row = divToPrint.insertRow(0);
+    var cell1 = row.insertCell(0);
+    var cell2 = row.insertCell(1);
+    cell1.innerHTML = document.getElementById("empleado").innerHTML;
+    cell2.innerHTML = document.getElementById("FechaParte").innerHTML;;
+
+    for (var row = 0; row < rows.length; row++) {
+        var cols = rows[row].children;
+        if (col_no >= 0 && col_no < cols.length) {
+            var cell = cols[col_no];
+            if (cell.tagName == 'TD') cell.style.display =  'none';
+        }
+    }
+    newWin = window.open("");
+    newWin.document.write(divToPrint.outerHTML);
+    newWin.print();
+    newWin.close();
+}
+
+</script>

@@ -1,0 +1,403 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="PartesModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="PartesModelStoreContainer">
+          <EntitySet Name="Cliente" EntityType="PartesModel.Store.Cliente" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Empleado" EntityType="PartesModel.Store.Empleado" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Parte" EntityType="PartesModel.Store.Parte" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Parte_Trabajo" EntityType="PartesModel.Store.Parte_Trabajo" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Proyecto" EntityType="PartesModel.Store.Proyecto" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Trabajo" EntityType="PartesModel.Store.Trabajo" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_Parte_Empleado" Association="PartesModel.Store.FK_Parte_Empleado">
+            <End Role="Empleado" EntitySet="Empleado" />
+            <End Role="Parte" EntitySet="Parte" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Parte_Trabajo_Cliente" Association="PartesModel.Store.FK_Parte_Trabajo_Cliente">
+            <End Role="Cliente" EntitySet="Cliente" />
+            <End Role="Parte_Trabajo" EntitySet="Parte_Trabajo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Parte_Trabajo_Parte" Association="PartesModel.Store.FK_Parte_Trabajo_Parte">
+            <End Role="Parte" EntitySet="Parte" />
+            <End Role="Parte_Trabajo" EntitySet="Parte_Trabajo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Parte_Trabajo_Proyecto" Association="PartesModel.Store.FK_Parte_Trabajo_Proyecto">
+            <End Role="Proyecto" EntitySet="Proyecto" />
+            <End Role="Parte_Trabajo" EntitySet="Parte_Trabajo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Parte_Trabajo_Trabajo" Association="PartesModel.Store.FK_Parte_Trabajo_Trabajo">
+            <End Role="Trabajo" EntitySet="Trabajo" />
+            <End Role="Parte_Trabajo" EntitySet="Parte_Trabajo" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Cliente">
+          <Key>
+            <PropertyRef Name="IdCliente" />
+          </Key>
+          <Property Name="IdCliente" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="nvarchar" MaxLength="500" />
+          <Property Name="Nota" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="Empleado">
+          <Key>
+            <PropertyRef Name="IdEmpleado" />
+          </Key>
+          <Property Name="IdEmpleado" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="nvarchar" MaxLength="50" />
+          <Property Name="Password" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Parte">
+          <Key>
+            <PropertyRef Name="IdParte" />
+          </Key>
+          <Property Name="IdParte" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Fecha" Type="datetime" />
+          <Property Name="Tiempo" Type="float" />
+          <Property Name="IdEmpleado" Type="int" />
+          <Property Name="Modificado" Type="bit" />
+          <Property Name="Motivo_Mod" Type="nvarchar" MaxLength="500" />
+          <Property Name="Nota" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="Parte_Trabajo">
+          <Key>
+            <PropertyRef Name="IdParte_Trabajo" />
+          </Key>
+          <Property Name="IdParte_Trabajo" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="IdParte" Type="int" />
+          <Property Name="IdProyecto" Type="int" />
+          <Property Name="FechaInicial" Type="datetime" />
+          <Property Name="FechaFinal" Type="datetime" />
+          <Property Name="Nota" Type="nvarchar" MaxLength="500" />
+          <Property Name="IdTrabajo" Type="int" />
+          <Property Name="IdCliente" Type="int" />
+        </EntityType>
+        <EntityType Name="Proyecto">
+          <Key>
+            <PropertyRef Name="IdProyecto" />
+          </Key>
+          <Property Name="IdProyecto" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="nvarchar" MaxLength="50" />
+          <Property Name="Descripcion" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="Trabajo">
+          <Key>
+            <PropertyRef Name="IdTrabajo" />
+          </Key>
+          <Property Name="IdTrabajo" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="Nombre" Type="nvarchar" MaxLength="50" />
+          <Property Name="Descripcion" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <Association Name="FK_Parte_Empleado">
+          <End Role="Empleado" Type="PartesModel.Store.Empleado" Multiplicity="0..1" />
+          <End Role="Parte" Type="PartesModel.Store.Parte" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Empleado">
+              <PropertyRef Name="IdEmpleado" />
+            </Principal>
+            <Dependent Role="Parte">
+              <PropertyRef Name="IdEmpleado" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Parte_Trabajo_Cliente">
+          <End Role="Cliente" Type="PartesModel.Store.Cliente" Multiplicity="0..1" />
+          <End Role="Parte_Trabajo" Type="PartesModel.Store.Parte_Trabajo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cliente">
+              <PropertyRef Name="IdCliente" />
+            </Principal>
+            <Dependent Role="Parte_Trabajo">
+              <PropertyRef Name="IdCliente" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Parte_Trabajo_Parte">
+          <End Role="Parte" Type="PartesModel.Store.Parte" Multiplicity="0..1" />
+          <End Role="Parte_Trabajo" Type="PartesModel.Store.Parte_Trabajo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parte">
+              <PropertyRef Name="IdParte" />
+            </Principal>
+            <Dependent Role="Parte_Trabajo">
+              <PropertyRef Name="IdParte" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Parte_Trabajo_Proyecto">
+          <End Role="Proyecto" Type="PartesModel.Store.Proyecto" Multiplicity="0..1" />
+          <End Role="Parte_Trabajo" Type="PartesModel.Store.Parte_Trabajo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proyecto">
+              <PropertyRef Name="IdProyecto" />
+            </Principal>
+            <Dependent Role="Parte_Trabajo">
+              <PropertyRef Name="IdProyecto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Parte_Trabajo_Trabajo">
+          <End Role="Trabajo" Type="PartesModel.Store.Trabajo" Multiplicity="0..1" />
+          <End Role="Parte_Trabajo" Type="PartesModel.Store.Parte_Trabajo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trabajo">
+              <PropertyRef Name="IdTrabajo" />
+            </Principal>
+            <Dependent Role="Parte_Trabajo">
+              <PropertyRef Name="IdTrabajo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="PartesModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="PartesEntities" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="Clientes" EntityType="PartesModel.Cliente" />
+          <EntitySet Name="Empleadoes" EntityType="PartesModel.Empleado" />
+          <EntitySet Name="Partes" EntityType="PartesModel.Parte" />
+          <EntitySet Name="Parte_Trabajo" EntityType="PartesModel.Parte_Trabajo" />
+          <EntitySet Name="Proyectoes" EntityType="PartesModel.Proyecto" />
+          <EntitySet Name="Trabajoes" EntityType="PartesModel.Trabajo" />
+          <AssociationSet Name="FK_Parte_Trabajo_Cliente" Association="PartesModel.FK_Parte_Trabajo_Cliente">
+            <End Role="Cliente" EntitySet="Clientes" />
+            <End Role="Parte_Trabajo" EntitySet="Parte_Trabajo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Parte_Empleado" Association="PartesModel.FK_Parte_Empleado">
+            <End Role="Empleado" EntitySet="Empleadoes" />
+            <End Role="Parte" EntitySet="Partes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Parte_Trabajo_Parte" Association="PartesModel.FK_Parte_Trabajo_Parte">
+            <End Role="Parte" EntitySet="Partes" />
+            <End Role="Parte_Trabajo" EntitySet="Parte_Trabajo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Parte_Trabajo_Proyecto" Association="PartesModel.FK_Parte_Trabajo_Proyecto">
+            <End Role="Proyecto" EntitySet="Proyectoes" />
+            <End Role="Parte_Trabajo" EntitySet="Parte_Trabajo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Parte_Trabajo_Trabajo" Association="PartesModel.FK_Parte_Trabajo_Trabajo">
+            <End Role="Trabajo" EntitySet="Trabajoes" />
+            <End Role="Parte_Trabajo" EntitySet="Parte_Trabajo" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Cliente">
+          <Key>
+            <PropertyRef Name="IdCliente" />
+          </Key>
+          <Property Type="Int32" Name="IdCliente" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Nombre" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Nota" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Parte_Trabajo" Relationship="PartesModel.FK_Parte_Trabajo_Cliente" FromRole="Cliente" ToRole="Parte_Trabajo" />
+        </EntityType>
+        <EntityType Name="Empleado">
+          <Key>
+            <PropertyRef Name="IdEmpleado" />
+          </Key>
+          <Property Type="Int32" Name="IdEmpleado" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Nombre" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Password" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Partes" Relationship="PartesModel.FK_Parte_Empleado" FromRole="Empleado" ToRole="Parte" />
+        </EntityType>
+        <EntityType Name="Parte">
+          <Key>
+            <PropertyRef Name="IdParte" />
+          </Key>
+          <Property Type="Int32" Name="IdParte" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="DateTime" Name="Fecha" Precision="3" />
+          <Property Type="Double" Name="Tiempo" />
+          <Property Type="Int32" Name="IdEmpleado" />
+          <Property Type="Boolean" Name="Modificado" />
+          <Property Type="String" Name="Motivo_Mod" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Nota" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Empleado" Relationship="PartesModel.FK_Parte_Empleado" FromRole="Parte" ToRole="Empleado" />
+          <NavigationProperty Name="Parte_Trabajo" Relationship="PartesModel.FK_Parte_Trabajo_Parte" FromRole="Parte" ToRole="Parte_Trabajo" />
+        </EntityType>
+        <EntityType Name="Parte_Trabajo">
+          <Key>
+            <PropertyRef Name="IdParte_Trabajo" />
+          </Key>
+          <Property Type="Int32" Name="IdParte_Trabajo" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="IdParte" />
+          <Property Type="Int32" Name="IdProyecto" />
+          <Property Type="DateTime" Name="FechaInicial" Precision="3" />
+          <Property Type="DateTime" Name="FechaFinal" Precision="3" />
+          <Property Type="String" Name="Nota" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="IdTrabajo" />
+          <Property Type="Int32" Name="IdCliente" />
+          <NavigationProperty Name="Cliente" Relationship="PartesModel.FK_Parte_Trabajo_Cliente" FromRole="Parte_Trabajo" ToRole="Cliente" />
+          <NavigationProperty Name="Parte" Relationship="PartesModel.FK_Parte_Trabajo_Parte" FromRole="Parte_Trabajo" ToRole="Parte" />
+          <NavigationProperty Name="Proyecto" Relationship="PartesModel.FK_Parte_Trabajo_Proyecto" FromRole="Parte_Trabajo" ToRole="Proyecto" />
+          <NavigationProperty Name="Trabajo" Relationship="PartesModel.FK_Parte_Trabajo_Trabajo" FromRole="Parte_Trabajo" ToRole="Trabajo" />
+        </EntityType>
+        <EntityType Name="Proyecto">
+          <Key>
+            <PropertyRef Name="IdProyecto" />
+          </Key>
+          <Property Type="Int32" Name="IdProyecto" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Nombre" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Descripcion" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Parte_Trabajo" Relationship="PartesModel.FK_Parte_Trabajo_Proyecto" FromRole="Proyecto" ToRole="Parte_Trabajo" />
+        </EntityType>
+        <EntityType Name="Trabajo">
+          <Key>
+            <PropertyRef Name="IdTrabajo" />
+          </Key>
+          <Property Type="Int32" Name="IdTrabajo" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="Nombre" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Descripcion" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Parte_Trabajo" Relationship="PartesModel.FK_Parte_Trabajo_Trabajo" FromRole="Trabajo" ToRole="Parte_Trabajo" />
+        </EntityType>
+        <Association Name="FK_Parte_Trabajo_Cliente">
+          <End Type="PartesModel.Cliente" Role="Cliente" Multiplicity="0..1" />
+          <End Type="PartesModel.Parte_Trabajo" Role="Parte_Trabajo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cliente">
+              <PropertyRef Name="IdCliente" />
+            </Principal>
+            <Dependent Role="Parte_Trabajo">
+              <PropertyRef Name="IdCliente" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Parte_Empleado">
+          <End Type="PartesModel.Empleado" Role="Empleado" Multiplicity="0..1" />
+          <End Type="PartesModel.Parte" Role="Parte" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Empleado">
+              <PropertyRef Name="IdEmpleado" />
+            </Principal>
+            <Dependent Role="Parte">
+              <PropertyRef Name="IdEmpleado" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Parte_Trabajo_Parte">
+          <End Type="PartesModel.Parte" Role="Parte" Multiplicity="0..1" />
+          <End Type="PartesModel.Parte_Trabajo" Role="Parte_Trabajo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Parte">
+              <PropertyRef Name="IdParte" />
+            </Principal>
+            <Dependent Role="Parte_Trabajo">
+              <PropertyRef Name="IdParte" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Parte_Trabajo_Proyecto">
+          <End Type="PartesModel.Proyecto" Role="Proyecto" Multiplicity="0..1" />
+          <End Type="PartesModel.Parte_Trabajo" Role="Parte_Trabajo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proyecto">
+              <PropertyRef Name="IdProyecto" />
+            </Principal>
+            <Dependent Role="Parte_Trabajo">
+              <PropertyRef Name="IdProyecto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Parte_Trabajo_Trabajo">
+          <End Type="PartesModel.Trabajo" Role="Trabajo" Multiplicity="0..1" />
+          <End Type="PartesModel.Parte_Trabajo" Role="Parte_Trabajo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Trabajo">
+              <PropertyRef Name="IdTrabajo" />
+            </Principal>
+            <Dependent Role="Parte_Trabajo">
+              <PropertyRef Name="IdTrabajo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="PartesModelStoreContainer" CdmEntityContainer="PartesEntities">
+          <EntitySetMapping Name="Clientes">
+            <EntityTypeMapping TypeName="PartesModel.Cliente">
+              <MappingFragment StoreEntitySet="Cliente">
+                <ScalarProperty Name="Nota" ColumnName="Nota" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="IdCliente" ColumnName="IdCliente" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Empleadoes">
+            <EntityTypeMapping TypeName="PartesModel.Empleado">
+              <MappingFragment StoreEntitySet="Empleado">
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="IdEmpleado" ColumnName="IdEmpleado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Partes">
+            <EntityTypeMapping TypeName="PartesModel.Parte">
+              <MappingFragment StoreEntitySet="Parte">
+                <ScalarProperty Name="Nota" ColumnName="Nota" />
+                <ScalarProperty Name="Motivo_Mod" ColumnName="Motivo_Mod" />
+                <ScalarProperty Name="Modificado" ColumnName="Modificado" />
+                <ScalarProperty Name="IdEmpleado" ColumnName="IdEmpleado" />
+                <ScalarProperty Name="Tiempo" ColumnName="Tiempo" />
+                <ScalarProperty Name="Fecha" ColumnName="Fecha" />
+                <ScalarProperty Name="IdParte" ColumnName="IdParte" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Parte_Trabajo">
+            <EntityTypeMapping TypeName="PartesModel.Parte_Trabajo">
+              <MappingFragment StoreEntitySet="Parte_Trabajo">
+                <ScalarProperty Name="IdCliente" ColumnName="IdCliente" />
+                <ScalarProperty Name="IdTrabajo" ColumnName="IdTrabajo" />
+                <ScalarProperty Name="Nota" ColumnName="Nota" />
+                <ScalarProperty Name="FechaFinal" ColumnName="FechaFinal" />
+                <ScalarProperty Name="FechaInicial" ColumnName="FechaInicial" />
+                <ScalarProperty Name="IdProyecto" ColumnName="IdProyecto" />
+                <ScalarProperty Name="IdParte" ColumnName="IdParte" />
+                <ScalarProperty Name="IdParte_Trabajo" ColumnName="IdParte_Trabajo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Proyectoes">
+            <EntityTypeMapping TypeName="PartesModel.Proyecto">
+              <MappingFragment StoreEntitySet="Proyecto">
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="IdProyecto" ColumnName="IdProyecto" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Trabajoes">
+            <EntityTypeMapping TypeName="PartesModel.Trabajo">
+              <MappingFragment StoreEntitySet="Trabajo">
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="IdTrabajo" ColumnName="IdTrabajo" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
